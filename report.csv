@@ -1,0 +1,943 @@
+Onderdeel;Corrects;Attempts;Punten;Max
+std-Opstarten;1;3;3;4
+std-Connect;1;1;1;1
+std-Disconnect;0;1;0;1
+std-Berichten;0;1;0;1
+std-BerichtNaVerandering;0;0;0;0.5
+std-NetwerkPartitie;0;0;0;1
+Opstarten;0;1;0;4
+Connect;0;0;0;1
+Disconnect;0;0;0;1
+Berichten;0;0;0;1
+BerichtNaVerandering;0;0;0;0.5
+NetwerkPartitie;0;0;0;1
+BovenLimiet;0;1;0;1
+Totaal;-;-;4;(van 18)
+
+Let op: deze berekening is niet het definitieve cijfer. Dit is alleen maar een automatisch gegenereerde score voor het testbare gedeelte, en het staat nog niet vast dat we dit bij de beoordeling gebruiken.
+
+------------------------------------
+
+Testcase;Status;Tijd;Omschrijving
+Standaard;Correct;14.24;Opstarten netwerk
+Standaard;Incorrect;25.56;Berichten sturen
+Standaard;Correct;22.38;Verbindingen aanleggen met C
+Standaard;Incorrect;0.01;Berichten sturen in gewijzigd netwerk
+Standaard;Incorrect;5.27;Verbindingen verbreken
+Random;Incorrect;7.35;Opstarten netwerk
+
+------------------------------------
+
+1;Standaard;Correct;14.24;Opstarten netwerk
+Test 1 - Standaard
+
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: opstarten geslaagd, R-tabel in orde.
+
+Log
+start MultiClientServer.exe 55500 55501 55502
+start MultiClientServer.exe 55501 55500 55502
+start MultiClientServer.exe 55502 55500 55501 55503 55504
+start MultiClientServer.exe 55503 55502 55505
+start MultiClientServer.exe 55504 55502 55505
+start MultiClientServer.exe 55505 55503 55504
+55501 < Client maakt verbinding: 55500
+55502 < Client maakt verbinding: 55501
+55503 < Client maakt verbinding: 55502
+55505 < Client maakt verbinding: 55503
+55505 < Client maakt verbinding: 55504
+55502 < Client maakt verbinding: 55500
+55504 < Client maakt verbinding: 55502
+55500 > R
+55501 > R
+55502 > R
+55501 < 55501 0 local
+55503 > R
+55502 < 55502 0 local
+55504 > R
+55501 < 55500 1 55500
+55501 < 55502 1 55502
+55505 > R
+55501 < 55503 2 55502
+55501 < 55505 3 55502
+55503 < 55503 0 local
+55501 < 55504 2 55502
+55503 < 55502 1 55502
+55501 < 
+55504 < 55504 0 local
+55502 < 55500 1 55500
+55503 < 55505 1 55505
+55505 < 55505 0 local
+55504 < 55505 1 55505
+55503 < 55504 2 55505
+55505 < 55502 2 55503
+55504 < 55502 1 55502
+55503 < 55500 2 55502
+55505 < 55503 1 55503
+55502 < 55501 1 55501
+55504 < 55503 2 55505
+55503 < 55501 2 55502
+55505 < 55504 1 55504
+55503 < 
+55504 < 55500 2 55502
+55502 < 55503 1 55503
+55500 < 55500 0 local
+55505 < 55500 3 55503
+55504 < 55501 2 55502
+55500 < 55501 1 55501
+55504 < 
+55505 < 55501 3 55503
+55502 < 55505 2 55503
+55500 < 55502 1 55502
+55505 < 
+55502 < 55504 1 55504
+55500 < 55503 2 55502
+55502 < 
+55500 < 55505 3 55502
+55500 < 55504 2 55502
+55500 <
+
+Process 55500:
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 2 55502
+55505 3 55502
+55504 2 55502
+
+Process 55501:
+Client maakt verbinding: 55500
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 3 55502
+55504 2 55502
+
+Process 55502:
+Client maakt verbinding: 55501
+Client maakt verbinding: 55500
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+Process 55503:
+Client maakt verbinding: 55502
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 2 55502
+55501 2 55502
+
+Process 55504:
+Client maakt verbinding: 55502
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+Process 55505:
+Client maakt verbinding: 55503
+Client maakt verbinding: 55504
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 3 55503
+55501 3 55503
+
+------------------------------------
+
+1;Standaard;Incorrect;25.56;Berichten sturen
+Test 1 - Standaard
+
+INCORRECT: Berichtcheck - van 55503 naar 55505 niet (snel genoeg) aangekomen!
+INCORRECT: Berichtcheck - van 55504 naar 55503 niet (snel genoeg) aangekomen!
+INCORRECT: Berichtcheck - van 55501 naar 55505 niet (snel genoeg) aangekomen!
+INCORRECT: Berichtcheck - van 55501 naar 55500 niet (snel genoeg) aangekomen!
+INCORRECT: Berichtcheck - van 55505 naar 55500 niet (snel genoeg) aangekomen!
+
+Log
+55503 > B 55505 HOI0
+55505 < 55503: HOI0
+55504 > B 55503 HOI1
+55503 < 55504: HOI1
+55501 > B 55505 HOI2
+55505 < 55501: HOI2
+55501 > B 55500 HOI3
+55500 < 55501: HOI3
+55505 > B 55500 HOI4
+55500 < 55505: HOI4
+
+Process 55500:
+55501: HOI3
+55505: HOI4
+
+Process 55501:
+> B 55505 HOI2
+> B 55500 HOI3
+
+Process 55503:
+> B 55505 HOI0
+55504: HOI1
+
+Process 55504:
+> B 55503 HOI1
+
+Process 55505:
+55503: HOI0
+55501: HOI2
+> B 55500 HOI4
+
+------------------------------------
+
+1;Standaard;Correct;22.38;Verbindingen aanleggen met C
+Test 1 - Standaard
+
+Verbinding van 0 naar 3 gemaakt.
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: na verandering klopt het netwerk weer.
+INCORRECT: Berichtcheck - van 55505 naar 55500 niet (snel genoeg) aangekomen!
+Verbinding van 5 naar 1 gemaakt.
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: na verandering klopt het netwerk weer.
+INCORRECT: Berichtcheck - van 55502 naar 55501 niet (snel genoeg) aangekomen!
+
+Log
+55500 > C 55503
+55503 < Client maakt verbinding: 55500
+55500 > R
+55500 < 55500 0 local
+55500 < 55501 1 55501
+55501 > R
+55500 < 55502 1 55502
+55501 < 55501 0 local
+55500 < 55503 1 55503
+55502 > R
+55501 < 55500 1 55500
+55500 < 55505 2 55503
+55502 < 55502 0 local
+55501 < 55502 1 55502
+55503 > R
+55500 < 55504 2 55502
+55502 < 55500 1 55500
+55501 < 55503 2 55502
+55504 > R
+55500 < 
+55503 < 55503 0 local
+55501 < 55505 3 55502
+55502 < 55501 1 55501
+55504 < 55504 0 local
+55505 > R
+55503 < 55502 1 55502
+55501 < 55504 2 55502
+55502 < 55503 1 55503
+55504 < 55505 1 55505
+55505 < 55505 0 local
+55503 < 55505 1 55505
+55501 < 
+55502 < 55505 2 55503
+55504 < 55502 1 55502
+55505 < 55502 2 55503
+55503 < 55504 2 55505
+55502 < 55504 1 55504
+55504 < 55503 2 55505
+55503 < 55500 1 55500
+55505 < 55503 1 55503
+55504 < 55500 2 55502
+55502 < 
+55503 < 55501 2 55502
+55505 < 55504 1 55504
+55504 < 55501 2 55502
+55503 < 
+55505 < 55500 2 55503
+55504 < 
+55505 < 55501 3 55503
+55505 < 
+55505 > B 55500 HOI5
+55505 > C 55501
+55501 < Client maakt verbinding: 55505
+55500 > R
+55501 > R
+55500 < 55500 0 local
+55502 > R
+55501 < 55501 0 local
+55500 < 55501 1 55501
+55501 < 55500 1 55500
+55500 < 55502 1 55502
+55501 < 55502 1 55502
+55502 < 55502 0 local
+55503 > R
+55500 < 55503 1 55503
+55501 < 55503 2 55502
+55502 < 55500 1 55500
+55500 < 55505 2 55503
+55501 < 55505 1 55505
+55500 < 55504 2 55502
+55502 < 55501 1 55501
+55500 < 
+55503 < 55503 0 local
+55501 < 55504 2 55502
+55502 < 55503 1 55503
+55504 > R
+55503 < 55502 1 55502
+55501 < 
+55502 < 55505 2 55503
+55503 < 55505 1 55505
+55502 < 55504 1 55504
+55504 < 55504 0 local
+55503 < 55504 2 55505
+55502 < 
+55504 < 55505 1 55505
+55503 < 55500 1 55500
+55503 < 55501 2 55502
+55503 < 
+55504 < 55502 1 55502
+55504 < 55503 2 55505
+55505 > R
+55504 < 55500 2 55502
+55504 < 55501 2 55502
+55505 < 55505 0 local
+55504 < 
+55505 < 55502 2 55503
+55505 < 55503 1 55503
+55505 < 55504 1 55504
+55505 < 55500 2 55503
+55505 < 55501 1 55501
+55505 < 
+55502 > B 55501 HOI6
+55501 < 55502: HOI6
+
+Process 55500:
+> C 55503
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55503
+55504 2 55502
+
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55503
+55504 2 55502
+
+Process 55501:
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 3 55502
+55504 2 55502
+
+Client maakt verbinding: 55505
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 1 55505
+55504 2 55502
+
+55502: HOI6
+
+Process 55502:
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+> B 55501 HOI6
+
+Process 55503:
+Client maakt verbinding: 55500
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 1 55500
+55501 2 55502
+
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 1 55500
+55501 2 55502
+
+Process 55504:
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+Process 55505:
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 2 55503
+55501 3 55503
+
+> B 55500 HOI5
+> C 55501
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 2 55503
+55501 1 55501
+
+------------------------------------
+
+1;Standaard;Incorrect;0.01;Berichten sturen in gewijzigd netwerk
+Test 1 - Standaard
+
+Verbinding van 0 naar 3 gemaakt.
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: na verandering klopt het netwerk weer.
+INCORRECT: Berichtcheck - van 55505 naar 55500 niet (snel genoeg) aangekomen!
+Verbinding van 5 naar 1 gemaakt.
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: na verandering klopt het netwerk weer.
+INCORRECT: Berichtcheck - van 55502 naar 55501 niet (snel genoeg) aangekomen!
+
+Log
+55500 > C 55503
+55503 < Client maakt verbinding: 55500
+55500 > R
+55500 < 55500 0 local
+55500 < 55501 1 55501
+55501 > R
+55500 < 55502 1 55502
+55501 < 55501 0 local
+55500 < 55503 1 55503
+55502 > R
+55501 < 55500 1 55500
+55500 < 55505 2 55503
+55502 < 55502 0 local
+55501 < 55502 1 55502
+55503 > R
+55500 < 55504 2 55502
+55502 < 55500 1 55500
+55501 < 55503 2 55502
+55504 > R
+55500 < 
+55503 < 55503 0 local
+55501 < 55505 3 55502
+55502 < 55501 1 55501
+55504 < 55504 0 local
+55505 > R
+55503 < 55502 1 55502
+55501 < 55504 2 55502
+55502 < 55503 1 55503
+55504 < 55505 1 55505
+55505 < 55505 0 local
+55503 < 55505 1 55505
+55501 < 
+55502 < 55505 2 55503
+55504 < 55502 1 55502
+55505 < 55502 2 55503
+55503 < 55504 2 55505
+55502 < 55504 1 55504
+55504 < 55503 2 55505
+55503 < 55500 1 55500
+55505 < 55503 1 55503
+55504 < 55500 2 55502
+55502 < 
+55503 < 55501 2 55502
+55505 < 55504 1 55504
+55504 < 55501 2 55502
+55503 < 
+55505 < 55500 2 55503
+55504 < 
+55505 < 55501 3 55503
+55505 < 
+55505 > B 55500 HOI5
+55505 > C 55501
+55501 < Client maakt verbinding: 55505
+55500 > R
+55501 > R
+55500 < 55500 0 local
+55502 > R
+55501 < 55501 0 local
+55500 < 55501 1 55501
+55501 < 55500 1 55500
+55500 < 55502 1 55502
+55501 < 55502 1 55502
+55502 < 55502 0 local
+55503 > R
+55500 < 55503 1 55503
+55501 < 55503 2 55502
+55502 < 55500 1 55500
+55500 < 55505 2 55503
+55501 < 55505 1 55505
+55500 < 55504 2 55502
+55502 < 55501 1 55501
+55500 < 
+55503 < 55503 0 local
+55501 < 55504 2 55502
+55502 < 55503 1 55503
+55504 > R
+55503 < 55502 1 55502
+55501 < 
+55502 < 55505 2 55503
+55503 < 55505 1 55505
+55502 < 55504 1 55504
+55504 < 55504 0 local
+55503 < 55504 2 55505
+55502 < 
+55504 < 55505 1 55505
+55503 < 55500 1 55500
+55503 < 55501 2 55502
+55503 < 
+55504 < 55502 1 55502
+55504 < 55503 2 55505
+55505 > R
+55504 < 55500 2 55502
+55504 < 55501 2 55502
+55505 < 55505 0 local
+55504 < 
+55505 < 55502 2 55503
+55505 < 55503 1 55503
+55505 < 55504 1 55504
+55505 < 55500 2 55503
+55505 < 55501 1 55501
+55505 < 
+55502 > B 55501 HOI6
+55501 < 55502: HOI6
+
+Process 55500:
+> C 55503
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55503
+55504 2 55502
+
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55503
+55504 2 55502
+
+Process 55501:
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 3 55502
+55504 2 55502
+
+Client maakt verbinding: 55505
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 1 55505
+55504 2 55502
+
+55502: HOI6
+
+Process 55502:
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+> B 55501 HOI6
+
+Process 55503:
+Client maakt verbinding: 55500
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 1 55500
+55501 2 55502
+
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 1 55500
+55501 2 55502
+
+Process 55504:
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+Process 55505:
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 2 55503
+55501 3 55503
+
+> B 55500 HOI5
+> C 55501
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 2 55503
+55501 1 55501
+
+------------------------------------
+
+1;Standaard;Incorrect;5.27;Verbindingen verbreken
+Test 1 - Standaard
+
+Fout bij opnieuw berekenen netwerk - de routing-tabel is incorrect.
+Verbinding van 0 naar 3 verbroken.
+De afstand van 55500 naar 55503 is niet correct (programma denkt 1 moet 2 zijn).
+De afstand van 55503 naar 55500 is niet correct (programma denkt 1 moet 2 zijn).
+De neighbor van 55505 naar 55500 is incorrect (3).
+
+Log
+55500 > D 55503
+55500 > R
+55501 > R
+55500 < 55500 0 local
+55500 < 55501 1 55501
+55501 < 55501 0 local
+55500 < 55502 1 55502
+55501 < 55500 1 55500
+55501 < 55502 1 55502
+55500 < 55503 1 55503
+55501 < 55503 2 55502
+55500 < 55505 2 55503
+55502 > R
+55500 < 55504 2 55502
+55501 < 55505 1 55505
+55501 < 55504 2 55502
+55500 < 
+55501 < 
+55502 < 55502 0 local
+55502 < 55500 1 55500
+55502 < 55501 1 55501
+55503 > R
+55502 < 55503 1 55503
+55502 < 55505 2 55503
+55502 < 55504 1 55504
+55502 < 
+55503 < 55503 0 local
+55504 > R
+55503 < 55502 1 55502
+55503 < 55505 1 55505
+55503 < 55504 2 55505
+55504 < 55504 0 local
+55505 > R
+55503 < 55500 1 55500
+55504 < 55505 1 55505
+55503 < 55501 2 55502
+55504 < 55502 1 55502
+55503 < 
+55505 < 55505 0 local
+55504 < 55503 2 55505
+55504 < 55500 2 55502
+55505 < 55502 2 55503
+55504 < 55501 2 55502
+55505 < 55503 1 55503
+55505 < 55504 1 55504
+55504 < 
+55505 < 55500 2 55503
+55505 < 55501 1 55501
+55505 <
+
+Process 55500:
+> D 55503
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55503
+55504 2 55502
+
+Process 55501:
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55503 2 55502
+55505 1 55505
+55504 2 55502
+
+Process 55502:
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 1 55503
+55505 2 55503
+55504 1 55504
+
+Process 55503:
+> R
+55503 0 local
+55502 1 55502
+55505 1 55505
+55504 2 55505
+55500 1 55500
+55501 2 55502
+
+Process 55504:
+> R
+55504 0 local
+55505 1 55505
+55502 1 55502
+55503 2 55505
+55500 2 55502
+55501 2 55502
+
+Process 55505:
+> R
+55505 0 local
+55502 2 55503
+55503 1 55503
+55504 1 55504
+55500 2 55503
+55501 1 55501
+
+------------------------------------
+
+2;Random;Incorrect;7.35;Opstarten netwerk
+Test 2 - Random
+
+Fout bij opzetten netwerk - de routing-tabel is incorrect.
+Het programma ziet de verbinding van 55500 naar 55501 niet.
+Het programma ziet de verbinding van 55500 naar 55502 niet.
+Het programma ziet de verbinding van 55500 naar 55503 niet.
+Het programma ziet de verbinding van 55500 naar 55504 niet.
+Het programma ziet de verbinding van 55500 naar 55505 niet.
+Het programma ziet de verbinding van 55500 naar 55506 niet.
+Het programma ziet de verbinding van 55500 naar 55507 niet.
+Het programma ziet de verbinding van 55500 naar 55508 niet.
+Het programma ziet de verbinding van 55501 naar 55500 niet.
+Het programma ziet de verbinding van 55501 naar 55502 niet.
+Het programma ziet de verbinding van 55501 naar 55503 niet.
+Het programma ziet de verbinding van 55501 naar 55504 niet.
+Het programma ziet de verbinding van 55501 naar 55505 niet.
+Het programma ziet de verbinding van 55501 naar 55506 niet.
+Het programma ziet de verbinding van 55501 naar 55507 niet.
+Het programma ziet de verbinding van 55501 naar 55508 niet.
+Het programma ziet de verbinding van 55502 naar 55500 niet.
+Het programma ziet de verbinding van 55502 naar 55501 niet.
+Het programma ziet de verbinding van 55502 naar 55503 niet.
+Het programma ziet de verbinding van 55502 naar 55504 niet.
+Het programma ziet de verbinding van 55502 naar 55505 niet.
+Het programma ziet de verbinding van 55502 naar 55506 niet.
+Het programma ziet de verbinding van 55502 naar 55507 niet.
+Het programma ziet de verbinding van 55502 naar 55508 niet.
+Het programma ziet de verbinding van 55503 naar 55500 niet.
+Het programma ziet de verbinding van 55503 naar 55501 niet.
+Het programma ziet de verbinding van 55503 naar 55502 niet.
+Het programma ziet de verbinding van 55503 naar 55504 niet.
+Het programma ziet de verbinding van 55503 naar 55505 niet.
+Het programma ziet de verbinding van 55503 naar 55506 niet.
+Het programma ziet de verbinding van 55503 naar 55507 niet.
+Het programma ziet de verbinding van 55503 naar 55508 niet.
+Het programma ziet de verbinding van 55504 naar 55500 niet.
+Het programma ziet de verbinding van 55504 naar 55501 niet.
+Het programma ziet de verbinding van 55504 naar 55502 niet.
+Het programma ziet de verbinding van 55504 naar 55503 niet.
+Het programma ziet de verbinding van 55504 naar 55505 niet.
+Het programma ziet de verbinding van 55504 naar 55506 niet.
+Het programma ziet de verbinding van 55504 naar 55507 niet.
+Het programma ziet de verbinding van 55504 naar 55508 niet.
+Het programma ziet de verbinding van 55505 naar 55500 niet.
+Het programma ziet de verbinding van 55505 naar 55501 niet.
+Het programma ziet de verbinding van 55505 naar 55502 niet.
+Het programma ziet de verbinding van 55505 naar 55503 niet.
+Het programma ziet de verbinding van 55505 naar 55504 niet.
+Het programma ziet de verbinding van 55505 naar 55506 niet.
+Het programma ziet de verbinding van 55505 naar 55507 niet.
+Het programma ziet de verbinding van 55505 naar 55508 niet.
+Het programma ziet de verbinding van 55506 naar 55500 niet.
+Het programma ziet de verbinding van 55506 naar 55501 niet.
+Het programma ziet de verbinding van 55506 naar 55502 niet.
+Het programma ziet de verbinding van 55506 naar 55503 niet.
+Het programma ziet de verbinding van 55506 naar 55504 niet.
+Het programma ziet de verbinding van 55506 naar 55505 niet.
+Het programma ziet de verbinding van 55506 naar 55507 niet.
+Het programma ziet de verbinding van 55506 naar 55508 niet.
+Het programma ziet de verbinding van 55507 naar 55500 niet.
+Het programma ziet de verbinding van 55507 naar 55501 niet.
+Het programma ziet de verbinding van 55507 naar 55502 niet.
+Het programma ziet de verbinding van 55507 naar 55503 niet.
+Het programma ziet de verbinding van 55507 naar 55504 niet.
+Het programma ziet de verbinding van 55507 naar 55505 niet.
+Het programma ziet de verbinding van 55507 naar 55506 niet.
+Het programma ziet de verbinding van 55507 naar 55508 niet.
+Het programma ziet de verbinding van 55508 naar 55500 niet.
+Het programma ziet de verbinding van 55508 naar 55501 niet.
+Het programma ziet de verbinding van 55508 naar 55502 niet.
+Het programma ziet de verbinding van 55508 naar 55503 niet.
+Het programma ziet de verbinding van 55508 naar 55504 niet.
+Het programma ziet de verbinding van 55508 naar 55505 niet.
+Het programma ziet de verbinding van 55508 naar 55506 niet.
+Het programma ziet de verbinding van 55508 naar 55507 niet.
+
+Log
+start MultiClientServer.exe 55500 55501 55502 55503 55506 55507
+start MultiClientServer.exe 55501 55500 55502 55504 55505 55506
+start MultiClientServer.exe 55502 55500 55501 55504
+start MultiClientServer.exe 55503 55500 55504 55505 55506 55508
+start MultiClientServer.exe 55504 55501 55502 55503 55506
+start MultiClientServer.exe 55505 55501 55503 55506
+start MultiClientServer.exe 55506 55500 55501 55503 55504 55505 55507
+start MultiClientServer.exe 55507 55500 55506
+start MultiClientServer.exe 55508 55503
+55501 < Client maakt verbinding: 55500
+55502 < Client maakt verbinding: 55501
+55504 < Client maakt verbinding: 55502
+55504 < Client maakt verbinding: 55503
+55506 < Client maakt verbinding: 55504
+55506 < Client maakt verbinding: 55505
+55507 < Client maakt verbinding: 55506
+55502 < Client maakt verbinding: 55500
+55504 < Client maakt verbinding: 55501
+55505 < Client maakt verbinding: 55503
+55503 < Client maakt verbinding: 55500
+55505 < Client maakt verbinding: 55501
+55506 < Client maakt verbinding: 55503
+55506 < Client maakt verbinding: 55500
+55506 < Client maakt verbinding: 55501
+55508 < Client maakt verbinding: 55503
+55507 < Client maakt verbinding: 55500
+55500 > R
+55501 > R
+55502 > R
+55503 > R
+55504 > R
+55505 > R
+55506 > R
+55507 > R
+55508 > R
+
+Process 55500:
+> R
+
+Process 55501:
+Client maakt verbinding: 55500
+> R
+
+Process 55502:
+Client maakt verbinding: 55501
+Client maakt verbinding: 55500
+> R
+
+Process 55503:
+Client maakt verbinding: 55500
+> R
+
+Process 55504:
+Client maakt verbinding: 55502
+Client maakt verbinding: 55503
+Client maakt verbinding: 55501
+> R
+
+Process 55505:
+Client maakt verbinding: 55503
+Client maakt verbinding: 55501
+> R
+
+Process 55506:
+Client maakt verbinding: 55504
+Client maakt verbinding: 55505
+Client maakt verbinding: 55503
+Client maakt verbinding: 55500
+Client maakt verbinding: 55501
+> R
+
+Process 55507:
+Client maakt verbinding: 55506
+Client maakt verbinding: 55500
+> R
+
+Process 55508:
+Client maakt verbinding: 55503
+> R
+
+Microsoft Windows NT 6.2.9200.0 (x64)
+.NET version: 4.0.30319.42000
+4 physical core(s), 4 virtual core(s) (hyperthreading), 1 processor(s)

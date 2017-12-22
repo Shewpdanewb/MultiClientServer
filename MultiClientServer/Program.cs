@@ -21,9 +21,6 @@ namespace MultiClientServer
 
 			Console.Title = "MultiClientServer " + MijnPoort;
 
-            Console.WriteLine("Typ [verbind poortnummer] om verbinding te maken, bijvoorbeeld: verbind 1100");
-            Console.WriteLine("Typ [poortnummer bericht] om een bericht te sturen, bijvoorbeeld: 1100 hoi hoi");
-
 			int[] buren = new int[args.Length - 1];
 			table = new RoutingTable(MijnPoort);
 
@@ -37,7 +34,16 @@ namespace MultiClientServer
 
 			foreach (KeyValuePair<int, Connection> buur in Buren)
 				for (int j = 0; j < buren.Length; j++)
-					UpdateDictionary(buren[j] + " 0 " + buren[j] + " " + MijnPoort);				
+				{
+					UpdateDictionary(buren[j] + " 0 " + buren[j] + " " + buren[j]);
+				}
+
+			lock (table.Table)
+			{
+				foreach (KeyValuePair<int, Entry> entry in table.Table)
+					foreach (KeyValuePair<int, Connection> buur in Buren)
+						SendMessage(buur.Key, "UpdateRoute " + entry.Value.ToString() + " " + MijnPoort);
+			}
 
 			while (true)
             {
@@ -52,10 +58,16 @@ namespace MultiClientServer
 						{
 							// Leg verbinding aan (als client)
 							Buren.Add(poort, new Connection(poort));
-							UpdateDictionary(poort + " 0 0 " + MijnPoort);
+							UpdateDictionary(poort + " 0 0 " + poort);
+
+							lock (table.Table)
+							{
+								foreach (KeyValuePair<int, Entry> entry in table.Table)
+									SendMessage(poort, "UpdateRoute " + entry.Value.ToString() + " " + MijnPoort);
+							}
 
 							foreach (KeyValuePair<int, Connection> buur in Buren)
-								Buren[buur.Key].Write.WriteLine("UpdateRoute " + MijnPoort + " 0 " + MijnPoort + " " + poort);
+								SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " 0 " + MijnPoort + " " + poort);
 						}
 						break;
 					case "R":
@@ -66,19 +78,7 @@ namespace MultiClientServer
 						string[] delen = input.Split(new char[]{' '}, 3);
 						int poort2 = int.Parse(delen[1]);
 
-						if (Buren.ContainsKey(poort2))
-						{
-							Buren[poort2].Write.WriteLine(MijnPoort + ": " + delen[2]);
-							Console.WriteLine("Test direct m");
-						}
-						else if (table.Table.ContainsKey(poort2))
-						{
-							int besteBuur = table.Table[poort2].BesteBuur;
-							Buren[besteBuur].Write.WriteLine("Forward " + poort2 + " " + MijnPoort + ": " + delen[2]);
-							Console.WriteLine("Test table forward");
-						}
-						else
-							Console.WriteLine("Geen verbinding naar deze poort mogelijk");
+						SendMessage(poort2, MijnPoort + ": " + delen[2]);
 
 						break;
 				}
@@ -92,34 +92,41 @@ namespace MultiClientServer
 			int afstand = int.Parse(delen[1]);
 			int besteBuur = int.Parse(delen[3]); // Verzender van bericht
 
-			if (!table.Table.ContainsKey(destination))
-				table.Table.Add(destination, new Entry(destination, afstand + 1, besteBuur));
-			else if (table.Table[destination].Afstand > afstand + 1)
+			lock (table.Table)
 			{
-				table.Table.Remove(destination);
-				table.Table.Add(destination, new Entry(destination, afstand + 1, besteBuur));
-			}
-			else
-				return;
-
-			foreach (KeyValuePair<int, Connection> buur in Buren)
-			{
-				Buren[buur.Key].Write.WriteLine("UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
-				Buren[buur.Key].Write.WriteLine("UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
+				if (!table.Table.ContainsKey(destination))
+				{
+					table.Table.Add(destination, new Entry(destination, afstand + 1, besteBuur));
+					SendUpdate(destination, afstand + 1, besteBuur);
+				}
+				else if (table.Table[destination].Afstand > (afstand + 1))
+				{
+					table.Table.Remove(destination);
+					table.Table.Add(destination, new Entry(destination, afstand + 1, besteBuur));
+					SendUpdate(destination, afstand + 1, besteBuur);
+				}
+				else
+					return;
 			}
 		}
 
-		public static void ForwardMessage(string message)
+		public static void SendMessage(int destination, string message)
 		{
-			string[] delen = message.Split(new char[] { ' ' }, 3);
-			int destination = int.Parse(delen[1]);
-
 			if (Buren.ContainsKey(destination))
-				Buren[destination].Write.WriteLine(delen[2]);
+				Buren[destination].Write.WriteLine(message);
 			else
 			{
 				int besteBuur = table.Table[destination].BesteBuur;
-				Buren[besteBuur].Write.WriteLine("Forward " + destination + " " + delen[2]);
+				Buren[besteBuur].Write.WriteLine("Forward " + destination + " " + message);
+			}
+		}
+
+		private static void SendUpdate(int destination, int afstand, int besteBuur)
+		{
+			foreach (KeyValuePair<int, Connection> buur in Buren)
+			{
+				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
+				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
 			}
 		}
     }

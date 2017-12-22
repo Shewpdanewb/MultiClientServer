@@ -50,14 +50,14 @@ namespace MultiClientServer
 						Program.UpdateDictionary(input.Substring(12));
 					else if (input.StartsWith("Forward"))
 					{
-						Console.WriteLine(input);
-						Program.ForwardMessage(input);
+						string[] delen = input.Split(new char[] { ' ' }, 3);
+						Program.SendMessage(int.Parse(delen[1]), delen[2]);
 					}
 					else
 						Console.WriteLine(input);
 				}
             }
-            catch (Exception e) { Console.WriteLine("Test try catch: " + e); } // Verbinding is kennelijk verbroken
+            catch { } // Verbinding is kennelijk verbroken
         }
 
 		private void TryConnect(object mt)
