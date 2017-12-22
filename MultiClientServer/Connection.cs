@@ -13,18 +13,16 @@ namespace MultiClientServer
     {
         public StreamReader Read;
         public StreamWriter Write;
+		private int clientPort;
 
         // Connection heeft 2 constructoren: deze constructor wordt gebruikt als wij CLIENT worden bij een andere SERVER
         public Connection(int port)
         {
-            TcpClient client = new TcpClient("localhost", port);
-            Read = new StreamReader(client.GetStream());
-            Write = new StreamWriter(client.GetStream());
-            Write.AutoFlush = true;
+			clientPort = port;
+			Thread connectThread = new Thread(TryConnect);
+			connectThread.Start();
 
-            // De server kan niet zien van welke poort wij client zijn, dit moeten we apart laten weten
-            Write.WriteLine("Poort: " + Program.MijnPoort);
-
+			connectThread.Join();
             // Start het reader-loopje
             new Thread(ReaderThread).Start();
         }
@@ -45,10 +43,45 @@ namespace MultiClientServer
         {
             try
             {
-                while (true)
-                    Console.WriteLine(Read.ReadLine());
+				while (true)
+				{
+					string input = Read.ReadLine();
+					if (input.StartsWith("UpdateRoute"))
+						Program.UpdateDictionary(input.Substring(12));
+					else if (input.StartsWith("Forward"))
+					{
+						Console.WriteLine(input);
+						Program.ForwardMessage(input);
+					}
+					else
+						Console.WriteLine(input);
+				}
             }
-            catch { } // Verbinding is kennelijk verbroken
+            catch (Exception e) { Console.WriteLine("Test try catch: " + e); } // Verbinding is kennelijk verbroken
         }
+
+		private void TryConnect(object mt)
+		{
+			bool TryAgain = true;
+			TcpClient client = null;
+
+			while (TryAgain)
+			{
+				try
+				{
+					client = new TcpClient("localhost", clientPort);
+					TryAgain = false;
+				}
+				catch { Thread.Sleep(1000); }
+				
+			}
+
+			Read = new StreamReader(client.GetStream());
+			Write = new StreamWriter(client.GetStream());
+			Write.AutoFlush = true;
+
+			// De server kan niet zien van welke poort wij client zijn, dit moeten we apart laten weten
+			Write.WriteLine("Poort: " + Program.MijnPoort);
+		}
     }
 }
