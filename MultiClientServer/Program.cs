@@ -58,6 +58,7 @@ namespace MultiClientServer
 						{
 							// Leg verbinding aan (als client)
 							Buren.Add(poort, new Connection(poort));
+							Console.WriteLine("Verbonden: " + poort);
 							UpdateDictionary(poort + " 0 0 " + poort);
 
 							lock (table.Table)
@@ -78,7 +79,7 @@ namespace MultiClientServer
 						string[] delen = input.Split(new char[]{' '}, 3);
 						int poort2 = int.Parse(delen[1]);
 
-						SendMessage(poort2, MijnPoort + ": " + delen[2]);
+						SendMessage(poort2, delen[2]);
 
 						break;
 				}
@@ -110,23 +111,28 @@ namespace MultiClientServer
 			}
 		}
 
-		public static void SendMessage(int destination, string message)
+		public static void SendMessage(int destination, string message, bool forwarded = false)
 		{
+			int forwardDestination = destination;
+
 			if (Buren.ContainsKey(destination))
 				Buren[destination].Write.WriteLine(message);
 			else
 			{
-				int besteBuur = table.Table[destination].BesteBuur;
-				Buren[besteBuur].Write.WriteLine("Forward " + destination + " " + message);
+				forwardDestination = table.Table[destination].BesteBuur;
+				Buren[forwardDestination].Write.WriteLine("Forward " + destination + " " + message);
 			}
+
+			if (!message.StartsWith("UpdateRoute"))
+				Console.WriteLine("Bericht voor " + destination + " doorgestuurd naar " + forwardDestination);
 		}
 
 		private static void SendUpdate(int destination, int afstand, int besteBuur)
 		{
 			foreach (KeyValuePair<int, Connection> buur in Buren)
 			{
-				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
-				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
+				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort, false);
+				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur, false);
 			}
 		}
     }

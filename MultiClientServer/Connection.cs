@@ -51,7 +51,7 @@ namespace MultiClientServer
 					else if (input.StartsWith("Forward"))
 					{
 						string[] delen = input.Split(new char[] { ' ' }, 3);
-						Program.SendMessage(int.Parse(delen[1]), delen[2]);
+						Program.SendMessage(int.Parse(delen[1]), delen[2], true);
 					}
 					else
 						Console.WriteLine(input);
