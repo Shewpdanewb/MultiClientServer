@@ -28,10 +28,10 @@ namespace MultiClientServer
         }
 
         // Deze constructor wordt gebruikt als wij SERVER zijn en een CLIENT maakt met ons verbinding
-        public Connection(StreamReader read, StreamWriter write)
+        public Connection(StreamReader read, StreamWriter write, int port)
         {
             Read = read; Write = write;
-
+			clientPort = port;
             // Start het reader-loopje
             new Thread(ReaderThread).Start();
         }
@@ -53,11 +53,16 @@ namespace MultiClientServer
 						string[] delen = input.Split(new char[] { ' ' }, 3);
 						Program.SendMessage(int.Parse(delen[1]), delen[2], true);
 					}
+					else if (input.StartsWith("LostConnection"))
+					{
+						string[] delen = input.Split(' ');
+						Program.LostConnection(int.Parse(delen[1]), int.Parse(delen[2]));
+					}
 					else
 						Console.WriteLine(input);
 				}
             }
-            catch { } // Verbinding is kennelijk verbroken
+            catch { Program.LostConnection(clientPort, clientPort); } // Verbinding is kennelijk verbroken
         }
 
 		private void TryConnect(object mt)

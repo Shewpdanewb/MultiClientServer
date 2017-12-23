@@ -82,6 +82,11 @@ namespace MultiClientServer
 						SendMessage(poort2, delen[2]);
 
 						break;
+					case "D":
+						string[] delen2 = input.Split(' ');
+						int port = int.Parse(delen2[1]);
+						LostConnection(port, port);
+						break;
 				}
             }
 		}
@@ -134,6 +139,46 @@ namespace MultiClientServer
 				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
 				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
 			}
+		}
+
+		public static void LostConnection(int port, int buur)
+		{
+			if (table.Table.ContainsKey(port))
+			{
+				if (table.Table[port].BesteBuur == buur)
+				{
+					if (Buren.ContainsKey(port))
+						Buren.Remove(port);
+
+					table.Table.Remove(port);
+
+					LostConnectionNeighbours(port);
+
+					foreach (KeyValuePair<int, Connection> buurConn in Buren)
+						SendMessage(buurConn.Key, "LostConnection " + port + " " + MijnPoort);
+
+					return;
+				}
+				else
+					SendMessage(buur, "UpdateRoute " + table.Table[port].ToString() + " " + MijnPoort);
+			}
+
+			LostConnectionNeighbours(port);
+		}
+
+		private static void LostConnectionNeighbours(int port)
+		{
+			List<int> toDelete = new List<int>();
+			foreach (KeyValuePair<int, Entry> entry in table.Table)
+				if (entry.Value.BesteBuur == port && entry.Value.Destination != port)
+				{
+					toDelete.Add(entry.Key);
+					foreach (KeyValuePair<int, Connection> buurConn in Buren)
+						SendMessage(buurConn.Key, "LostConnection " + entry.Key + " " + MijnPoort);
+				}
+
+			for (int i = 0; i < toDelete.Count; i++)
+				table.Table.Remove(toDelete[i]);
 		}
     }
 }
