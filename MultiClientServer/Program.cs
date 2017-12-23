@@ -85,7 +85,7 @@ namespace MultiClientServer
 					case "D":
 						string[] delen2 = input.Split(' ');
 						int port = int.Parse(delen2[1]);
-						LostConnection(port, port);
+						LostConnection(port, port, 1);
 						break;
 				}
             }
@@ -141,14 +141,17 @@ namespace MultiClientServer
 			}
 		}
 
-		public static void LostConnection(int port, int buur, int counter = 1)
+		public static void LostConnection(int port, int buur, int counter)
 		{
 			lock (table.Table)
 			{
 				if (table.Table.ContainsKey(port))
 				{
-					if (table.Table[port].Afstand > counter)
+					if (table.Table[port].Afstand < counter)
+					{
+						LostConnectionNeighbours(port, counter);
 						return;
+					}
 					if (table.Table[port].BesteBuur == buur)
 					{
 						if (Buren.ContainsKey(port))
@@ -156,12 +159,12 @@ namespace MultiClientServer
 
 						table.Table.Remove(port);
 
-						LostConnectionNeighbours(port);
+						LostConnectionNeighbours(port, counter);
 
 						lock (Buren)
 						{
 							foreach (KeyValuePair<int, Connection> buurConn in Buren)
-								SendMessage(buurConn.Key, "LostConnection " + port + " " + MijnPoort + " " + counter++);
+								SendMessage(buurConn.Key, "LostConnection " + port + " " + MijnPoort + " " + (counter + 1));
 						}
 
 						return;
@@ -169,15 +172,15 @@ namespace MultiClientServer
 					else
 						SendMessage(buur, "UpdateRoute " + table.Table[port].ToString() + " " + MijnPoort);
 				}
-				LostConnectionNeighbours(port);
+				LostConnectionNeighbours(port, counter);
 			}
 		}
 
-		private static void LostConnectionNeighbours(int port)
+		private static void LostConnectionNeighbours(int port, int counter)
 		{
 			List<int> toDelete = new List<int>();
 			foreach (KeyValuePair<int, Entry> entry in table.Table)
-				if (entry.Value.BesteBuur == port && entry.Value.Destination != port)
+				if (entry.Value.BesteBuur == port && entry.Value.Afstand < counter)
 				{
 					toDelete.Add(entry.Key);
 					foreach (KeyValuePair<int, Connection> buurConn in Buren)

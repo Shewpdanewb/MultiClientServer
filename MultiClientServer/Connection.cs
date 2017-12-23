@@ -56,13 +56,13 @@ namespace MultiClientServer
 					else if (input.StartsWith("LostConnection"))
 					{
 						string[] delen = input.Split(' ');
-						Program.LostConnection(int.Parse(delen[1]), int.Parse(delen[2]));
+						Program.LostConnection(int.Parse(delen[1]), int.Parse(delen[2]), int.Parse(delen[3]));
 					}
 					else
 						Console.WriteLine(input);
 				}
             }
-            catch { Program.LostConnection(clientPort, clientPort); } // Verbinding is kennelijk verbroken
+            catch { Program.LostConnection(clientPort, clientPort, 1); } // Verbinding is kennelijk verbroken
         }
 
 		private void TryConnect(object mt)
