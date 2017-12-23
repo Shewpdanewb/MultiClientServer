@@ -141,29 +141,36 @@ namespace MultiClientServer
 			}
 		}
 
-		public static void LostConnection(int port, int buur)
+		public static void LostConnection(int port, int buur, int counter = 1)
 		{
-			if (table.Table.ContainsKey(port))
+			lock (table.Table)
 			{
-				if (table.Table[port].BesteBuur == buur)
+				if (table.Table.ContainsKey(port))
 				{
-					if (Buren.ContainsKey(port))
-						Buren.Remove(port);
+					if (table.Table[port].Afstand > counter)
+						return;
+					if (table.Table[port].BesteBuur == buur)
+					{
+						if (Buren.ContainsKey(port))
+							Buren.Remove(port);
 
-					table.Table.Remove(port);
+						table.Table.Remove(port);
 
-					LostConnectionNeighbours(port);
+						LostConnectionNeighbours(port);
 
-					foreach (KeyValuePair<int, Connection> buurConn in Buren)
-						SendMessage(buurConn.Key, "LostConnection " + port + " " + MijnPoort);
+						lock (Buren)
+						{
+							foreach (KeyValuePair<int, Connection> buurConn in Buren)
+								SendMessage(buurConn.Key, "LostConnection " + port + " " + MijnPoort + " " + counter++);
+						}
 
-					return;
+						return;
+					}
+					else
+						SendMessage(buur, "UpdateRoute " + table.Table[port].ToString() + " " + MijnPoort);
 				}
-				else
-					SendMessage(buur, "UpdateRoute " + table.Table[port].ToString() + " " + MijnPoort);
+				LostConnectionNeighbours(port);
 			}
-
-			LostConnectionNeighbours(port);
 		}
 
 		private static void LostConnectionNeighbours(int port)
@@ -174,7 +181,7 @@ namespace MultiClientServer
 				{
 					toDelete.Add(entry.Key);
 					foreach (KeyValuePair<int, Connection> buurConn in Buren)
-						SendMessage(buurConn.Key, "LostConnection " + entry.Key + " " + MijnPoort);
+						SendMessage(buurConn.Key, "LostConnection " + entry.Key + " " + MijnPoort + " " + table.Table[entry.Key].Afstand);
 				}
 
 			for (int i = 0; i < toDelete.Count; i++)
