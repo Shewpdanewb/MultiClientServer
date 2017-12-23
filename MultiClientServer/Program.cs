@@ -82,6 +82,13 @@ namespace MultiClientServer
 						SendMessage(poort2, delen[2]);
 
 						break;
+					case "D":
+						// Verwijder connectie
+						string[] delen2 = input.Split(' ');
+						int port = int.Parse(delen2[1]);
+						SendMessage(port, "PlsRemoveMe " + MijnPoort);
+						UpdateRemoval(port);
+						break;
 				}
             }
 		}
@@ -123,7 +130,7 @@ namespace MultiClientServer
 				Buren[forwardDestination].Write.WriteLine("Forward " + destination + " " + message);
 			}
 
-			if (!message.StartsWith("UpdateRoute"))
+			if (forwarded)
 				Console.WriteLine("Bericht voor " + destination + " doorgestuurd naar " + forwardDestination);
 		}
 
@@ -131,8 +138,60 @@ namespace MultiClientServer
 		{
 			foreach (KeyValuePair<int, Connection> buur in Buren)
 			{
-				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort, false);
-				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur, false);
+				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
+				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
+			}
+		}
+
+		public static void UpdateRemoval(int client, int counter = 1)
+		{
+			Buren.Remove(client);
+			table.Table.Remove(client);
+			List<int> toDelete = new List<int>();
+			foreach (KeyValuePair<int, Entry> entry in table.Table)
+				if (entry.Value.BesteBuur == client)
+				{
+					foreach (KeyValuePair<int, Connection> buur in Buren)
+						SendMessage(buur.Key, "LostNeighbour " + entry.Value.Destination + " " + MijnPoort);
+
+					toDelete.Add(entry.Key);
+				}
+			for (int i = 0; i < toDelete.Count; i++)
+				table.Table.Remove(toDelete[i]);
+
+			foreach (KeyValuePair<int, Connection> buur in Buren)
+					SendMessage(buur.Key, "RemoveRoute " + client + " " + MijnPoort + " " + counter);
+
+		}
+
+		public static void RemoveEntry(string input)
+		{
+			string[] delen = input.Split(' ');
+			int lostPort = int.Parse(delen[0]);
+			int afstand = int.Parse(delen[2]) + 1;
+
+			if (table.Table.ContainsKey(lostPort)) {
+				if (table.Table[lostPort].Afstand >= afstand)
+					UpdateRemoval(lostPort, afstand);
+				else
+				{
+					foreach (KeyValuePair<int, Connection> buur in Buren)
+						SendUpdate(buur.Key, table.Table[lostPort].Afstand, MijnPoort);
+				}
+			}
+		}
+		public static void RemoveLostPath(string input)
+		{
+			string[] delen = input.Split(' ');
+			int lostPort = int.Parse(delen[0]);
+			int besteBuur = int.Parse(delen[1]);
+
+			if (table.Table.ContainsKey(lostPort) && table.Table[lostPort].BesteBuur == besteBuur)
+			{
+				table.Table.Remove(lostPort);
+			
+				foreach (KeyValuePair<int, Connection> buur in Buren)
+					SendMessage(buur.Key, "LostNeighbour " + besteBuur + " " + MijnPoort);
 			}
 		}
     }
