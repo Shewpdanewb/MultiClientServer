@@ -123,7 +123,7 @@ namespace MultiClientServer
 				Buren[forwardDestination].Write.WriteLine("Forward " + destination + " " + message);
 			}
 
-			if (!message.StartsWith("UpdateRoute"))
+			if (forwarded)
 				Console.WriteLine("Bericht voor " + destination + " doorgestuurd naar " + forwardDestination);
 		}
 
@@ -131,8 +131,8 @@ namespace MultiClientServer
 		{
 			foreach (KeyValuePair<int, Connection> buur in Buren)
 			{
-				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort, false);
-				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur, false);
+				SendMessage(buur.Key, "UpdateRoute " + table.Table[destination].ToString() + " " + MijnPoort);
+				SendMessage(buur.Key, "UpdateRoute " + MijnPoort + " " + afstand + " 0 " + besteBuur);
 			}
 		}
     }
